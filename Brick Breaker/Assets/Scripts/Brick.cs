@@ -20,11 +20,13 @@ public class Brick : MonoBehaviour
 
         if(ball != null)
         {
+            SoundManager.Instance.Play(SoundEvents.BallHit);
             health--;
             GameManager.score++;
             if(health ==0)
             {
                 Destroy(gameObject);
+                GameManager.bricksInLevel--;
             }
             health_text.text = health.ToString();
         }

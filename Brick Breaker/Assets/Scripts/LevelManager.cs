@@ -1,18 +1,57 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+
+    public Levels[] levels;
+    public int currLevel;
+
+
+    public void onClick(int level_No)
     {
-        
+        SoundManager.Instance.Play(SoundEvents.ButtonClick);
+        if(levels[level_No - 1].getLevelStatus() == levelStatus.unlocked)
+        {
+            levels[level_No - 1].setLevelActive();
+            GameManager.bricksInLevel = levels[level_No - 1].getBricks();
+            GameManager.playing = true;
+        }
+        else
+        {
+            Debug.Log("Level Locked");
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
-        
+        currLevel = 0;
+        levels[currLevel].setLevelStatus(levelStatus.unlocked);
+        GameManager.bricksInLevel = levels[currLevel].getBricks();
+        for (int i = 0; i<levels.Length; i++)
+        {
+            levels[i].setLevelInactive();
+        }
     }
+
+    public void level_Completed()
+    {
+        if (currLevel <= 2)
+        {
+            currLevel++;
+            for (int i = 0; i < levels.Length; i++)
+            {
+                levels[i].setLevelInactive();
+            }
+
+            levels[currLevel].setLevelStatus(levelStatus.unlocked);
+            levels[currLevel].setLevelActive();
+            GameManager.bricksInLevel = levels[currLevel].getBricks();
+        }
+    }
+
 }
+
+
