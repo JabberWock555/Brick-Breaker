@@ -11,13 +11,17 @@ public class Ball : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Invoke(nameof(motion), 1f);
+        transform.position = new Vector3(0, 0, 0);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (GameManager.playing)
+        {
+            Invoke(nameof(motion), 1f);
+        }
+
     }
 
     private void motion()
@@ -27,4 +31,7 @@ public class Ball : MonoBehaviour
         force.y = -1f;
         body.AddForce(force.normalized * speed);
     }
+
+
+
 }
