@@ -1,24 +1,26 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Striker : MonoBehaviour
 {
-    private Rigidbody2D rb;
+    public GameObject[] points;
+    public GameObject[] balls;
+    
     [SerializeField] private Transform aim;
     [SerializeField] private GameObject BallPrefab;
     [SerializeField] private GameObject pointPrefab;
-    public GameObject[] points;
-    public GameObject[] balls;
     [SerializeField] private int numberofballs = 50;
     [SerializeField] private int numberofPoints = 20;
     [SerializeField] private float speed = 30f;
+
+    private Rigidbody2D rb;
     private bool shooting = false;
     private Vector2 direction;
     private float maxBounceAngle = 75f;
     private float aimAngle = 0f;
     private float offsetAngle = -90f;
     private float shootDelay = 0.1f;
+
     public static int ballsDestroyed = 0;
 
     void Start()
