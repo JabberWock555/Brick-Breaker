@@ -5,47 +5,71 @@ using UnityEngine;
 public class Striker : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D rb;
-    private float speed = 10f;
-    [SerializeField] private float padding = 1f;
-    private float minX, maxX;
-
-
-
-    // Start is called before the first frame update
+    [SerializeField] private float speed = 30f;
+    private Vector2 direction;
+    private float maxBounceAngle = 75f;
+    
     void Start()
     {
-        screenBounds();
-        
+
     }
 
-
-    // Update is called once per frame
     void Update()
     {
+        setDirection();
+
+    }
+
+    private void FixedUpdate()
+    {
+        movement(direction);
+    }
+
+    void setDirection()
+    {
         float horizontal = Input.GetAxisRaw("Horizontal");
-        movement(horizontal);
+
+        if (horizontal > 0.1f)
+        {
+            direction = Vector2.right;
+        }
+        else if (horizontal < -0.1f)
+        {
+            direction = Vector2.left;
+        }
+        else
+        {
+            direction = Vector2.zero;
+        }
     }
 
-    //private void LateUpdate()
-    //{
-    //    Vector3 viewPos = transform.position;
-    //    viewPos.x = Mathf.Clamp(viewPos.x, rect.anchorMin.x, rect.anchorMax.x);
-    //    transform.position = viewPos;
-    //}
-
-    void movement(float horizontal)
+    void movement(Vector2 direction_)
     {
-        float positionX = horizontal * speed * Time.deltaTime;
-
-        float newPosX = Mathf.Clamp(transform.position.x + positionX, minX, maxX);
-
-        transform.position =new Vector2( newPosX, transform.position.y);
+        if (direction != Vector2.zero)
+        {
+            rb.AddForce(direction_ * speed);
+        }
     }
 
-    void screenBounds()
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        Camera camera = Camera.main;
-        minX = camera.ViewportToWorldPoint(new Vector3(0, 0, 0)).x + padding;
-        maxX = camera.ViewportToWorldPoint(new Vector3(1, 0, 0)).x - padding;
+        Rigidbody2D ball = collision.gameObject.GetComponent<Rigidbody2D>();
+
+        if( ball != null)
+        {
+            Vector3 strikerPos = transform.position;
+            Vector2 contactPoints = collision.GetContact(0).point;
+
+            float offset = strikerPos.x - contactPoints.x;
+            float width = collision.otherCollider.bounds.size.x /2;
+
+            float currAngle = Vector2.SignedAngle(Vector2.up, ball.velocity);
+            float bounceAngle = (offset / width) * maxBounceAngle;
+            float newAngle = Mathf.Clamp(currAngle + bounceAngle, -maxBounceAngle, maxBounceAngle);
+
+            Quaternion rotation = Quaternion.AngleAxis(newAngle, Vector3.forward);
+            ball.velocity = rotation * Vector2.up * ball.velocity.magnitude;
+        }
     }
+
 }
