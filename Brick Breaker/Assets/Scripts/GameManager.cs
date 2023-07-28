@@ -54,5 +54,10 @@ public class GameManager : MonoBehaviour
         striker.disableStriker();
     }
 
+    public void quit()
+    {
+        Application.Quit();
+    }
+
 
 }
